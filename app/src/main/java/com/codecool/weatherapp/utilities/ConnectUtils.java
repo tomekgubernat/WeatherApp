@@ -15,11 +15,11 @@ public final class ConnectUtils {
     private static final String TAG = ConnectUtils.class.getSimpleName();
 
 
-    private static final String WEATHER_URL_ = "http://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=c29467bfa16601d499d65f8fea90da2e";
+    private static final String WEATHER_URL_ = "http://api.openweathermap.org/data/2.5/forecast?q=London,uk&APPID=c29467bfa16601d499d65f8fea90da2e";
 
-    private static String apiKey = "c29467bfa16601d499d65f8fea90da2e";
+    //private static String apiKey = "c29467bfa16601d499d65f8fea90da2e";
 
-    final static String QUERY_PARAM = "q";
+    //final static String QUERY_PARAM = "q";
     //final static String APPID_PARAM = "&appid=";
 
 
