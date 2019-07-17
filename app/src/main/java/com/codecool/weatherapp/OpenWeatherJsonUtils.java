@@ -1,7 +1,9 @@
 package com.codecool.weatherapp;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 
+import com.codecool.weatherapp.utilities.DataUtils;
 import com.codecool.weatherapp.utilities.WeatherUtils;
 
 import org.json.JSONArray;
@@ -13,53 +15,63 @@ public final class OpenWeatherJsonUtils {
     public static String[] getSimpleWeatherStringsFromJson(Context context, String forecastJsonStr)
             throws JSONException {
 
-        final String OWM_LIST = "list";
+        final String LIST = "list";
+        final String MAIN = "main";
+        final String WEATHER = "weather";
+        final String DATE = "dt_txt";
+        final String MAX = "temp_max";
+        final String MIN = "temp_min";
+        final String HUM = "humidity";
+        final String DESCRIPTION = "description";
 
-        final String OWM_MAIN = "main";
-
-        final String OWM_WEATHER = "weather";
-
-        final String OWM_MAX = "temp_max";
-        final String OWM_MIN = "temp_min";
-
-        final String OWM_HUM = "humidity";
-        final String OWM_DESCRIPTION = "main";
-
-
+        long localSystemDate = System.currentTimeMillis();
 
         String[] parsedWeatherData = null;
 
         JSONObject forecastJson = new JSONObject(forecastJsonStr);
 
-        JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+        JSONArray weatherArray = forecastJson.getJSONArray(LIST);
 
-        parsedWeatherData = new String[weatherArray.length()];
+        parsedWeatherData = new String[weatherArray.length()/8];
 
-        for (int i = 0; i < weatherArray.length(); i++) {
+        int j = 0;
 
+        for (int i = 0; i < weatherArray.length()/8; i++) {
+
+            String DateFinal;
             String high_low;
             double temp_max;
             double temp_min;
             int humidity;
-            //String description;
+            String description;
+            String dt_txt;
 
-            JSONObject dayForecast = weatherArray.getJSONObject(i);
+            long dateWithTimeZone = DataUtils.getUTCDateWithTimeZone(localSystemDate);
+            long startDay = dateWithTimeZone/ DataUtils.DAY_IN_MILI * DataUtils.DAY_IN_MILI;
 
-            //JSONObject weatherObject = forecastJson.getJSONArray(OWM_WEATHER).getJSONObject(0);
-            //description = weatherObject.getString(OWM_DESCRIPTION);
+            long dateInMiliSec;
 
-            JSONObject mainData = dayForecast.getJSONObject(OWM_MAIN);
+            j=i*8;
 
-            temp_max = mainData.getDouble(OWM_MAX);
-            temp_min = mainData.getDouble(OWM_MIN);
-            humidity = mainData.getInt(OWM_HUM);
+            JSONObject dayForecast = weatherArray.getJSONObject(j);
+
+            JSONObject weatherObject = dayForecast.getJSONArray(WEATHER).getJSONObject(0);
+            description = weatherObject.getString(DESCRIPTION);
+
+            dt_txt = dayForecast.getString(DATE);
+
+            dateInMiliSec = startDay + DataUtils.DAY_IN_MILI * i;
+            DateFinal = DataUtils.getStringDates(dateInMiliSec);
+
+            JSONObject mainData = dayForecast.getJSONObject(MAIN);
+
+            temp_max = mainData.getDouble(MAX);
+            temp_min = mainData.getDouble(MIN);
+            humidity = mainData.getInt(HUM);
             high_low = WeatherUtils.formatHighLows(temp_max, temp_min);
 
-            parsedWeatherData[i] =  " | " + humidity + " | " + high_low;
-
+            parsedWeatherData[i] = DateFinal + "\n" + dt_txt + "\n" + description + " | " + humidity + " | " + high_low;
         }
-
-
         return parsedWeatherData;
     }
 

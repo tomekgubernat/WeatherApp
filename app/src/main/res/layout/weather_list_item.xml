@@ -9,8 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/newTextViewName"
-        android:textSize="36sp"/>
+        android:textSize="24sp"
+        android:padding="16dp"/>
 
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorPrimaryDark"/>
 
 </LinearLayout>

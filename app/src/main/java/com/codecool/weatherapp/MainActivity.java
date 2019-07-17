@@ -7,17 +7,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codecool.weatherapp.utilities.ConnectUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener {
 
     private RecyclerView mRecyclerView;
     private WeatherAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    String[] simpleJsonWeatherData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        mAdapter = new WeatherAdapter();
+        mAdapter = new WeatherAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
 
@@ -48,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
         new FetchWeatherTask().execute(location);
     }
 
+    @Override
+    public void onWeatherClick(int position) {
+        String test = simpleJsonWeatherData[position];
+        Toast.makeText(this, test + position, Toast.LENGTH_SHORT).show();
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         @Override
@@ -60,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
 
-                String[] simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+                simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
 
                 return simpleJsonWeatherData;
             } catch (Exception e) {

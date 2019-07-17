@@ -10,19 +10,36 @@ import android.widget.TextView;
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHolder> {
 
     private String[] mWeatherData;
+    private OnClickListener mOnClickListener;
 
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView mTextView;
-        public MyViewHolder(View itemView) {
+        OnClickListener mOnClickListener;
+
+        public MyViewHolder(View itemView, OnClickListener onClickListener) {
             super(itemView);
             mTextView = (TextView) itemView.findViewById(R.id.newTextViewName);
+            this.mOnClickListener = onClickListener;
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            mOnClickListener.onWeatherClick(getAdapterPosition());
+        }
+
+
     }
 
+    public interface OnClickListener {
+        void onWeatherClick(int position);
+    }
 
-    public WeatherAdapter(){
+    public WeatherAdapter(OnClickListener onClickListener){
+        this.mOnClickListener = onClickListener;
         //mWeatherData = myWeatherData;
     }
 
@@ -30,7 +47,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.weather_list_item, viewGroup, false);
 
-        MyViewHolder vh = new MyViewHolder(view);
+        MyViewHolder vh = new MyViewHolder(view, mOnClickListener);
         return vh;
     }
 
