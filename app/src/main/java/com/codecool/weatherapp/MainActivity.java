@@ -1,6 +1,13 @@
 package com.codecool.weatherapp;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +20,7 @@ import com.codecool.weatherapp.utilities.ConnectUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener {
+public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener, LoaderManager.LoaderCallbacks<String[]> {
 
     private RecyclerView mRecyclerView;
     private WeatherAdapter mAdapter;
@@ -21,10 +28,18 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
 
     String[] simpleJsonWeatherData;
 
+    public FragmentManager fm;
+    public Fragment fragment;
+
+    public static final int LOADER_ID = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        fm = getSupportFragmentManager();
+        fragment = fm.findFragmentById(R.id.fragment_container);
+
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycleview_weather);
@@ -38,58 +53,142 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         mAdapter = new WeatherAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
+        LoaderManager.LoaderCallbacks<String[]> callback = MainActivity.this;
 
-        loadAllWeatherData();
+        Bundle bundleForLoader = null;
+
+        getSupportLoaderManager().initLoader(LOADER_ID, bundleForLoader, callback);
+
+
+
+
+
+        //loadAllWeatherData();
+
+
 
     }
 
-    private void loadAllWeatherData(){
-        mRecyclerView.setVisibility(View.VISIBLE);
-
-        String location = Preferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(location);
-    }
 
     @Override
     public void onWeatherClick(int position) {
         String test = simpleJsonWeatherData[position];
         Toast.makeText(this, test + position, Toast.LENGTH_SHORT).show();
-    }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-
-        @Override
-        protected String[] doInBackground(String... params) {
-
-            String location = params[0];
-            URL weatherRequestUrl = ConnectUtils.buildUrl(location);
-
-
-            try{
-                String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
-
-                simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
-
-                return simpleJsonWeatherData;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+        if(fragment == null) {
+            fragment = new DetailsWeatherFragment();
+            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
         }
 
-        @Override
-        protected void onPostExecute(String[] strings) {
-            //super.onPostExecute(strings);
-            mRecyclerView.setVisibility(View.VISIBLE);
+    }
 
-            if (strings != null) {
+//    private void loadAllWeatherData(){
+//        mRecyclerView.setVisibility(View.VISIBLE);
+//
+//        String location = Preferences.getPreferredWeatherLocation(this);
+//        new FetchWeatherTask().execute(location);
+//
+//
+//    }
 
-                mAdapter.setWeatherData(strings);
+    private void invalidData(){
+        mAdapter.setWeatherData(null);
+    }
+
+
+    @NonNull
+    @Override
+    public Loader<String[]> onCreateLoader(int i, @Nullable final Bundle bundle) {
+        return new AsyncTaskLoader<String[]>(this) {
+
+            String[] mData;
+
+            @Override
+            protected void onStartLoading() {
+                if (mData != null) {
+                    deliverResult(mData);
+                } else {
+                    forceLoad();
                 }
             }
 
+            @Nullable
+            @Override
+            public String[] loadInBackground() {
 
+                String location = Preferences.getPreferredWeatherLocation(MainActivity.this);
+                URL weatherRequestUrl = ConnectUtils.buildUrl(location);
+
+
+                try{
+                    String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
+
+                    simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+
+                    return simpleJsonWeatherData;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            public void deliverResult (String[] dt){
+                mData = dt;
+                super.deliverResult(dt);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<String[]> loader, String[] strings) {
+        mRecyclerView.setVisibility(View.VISIBLE);
+
+        if (strings != null) {
+
+            mAdapter.setWeatherData(strings);
         }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<String[]> loader) {
+
+    }
+
+
+//    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+//
+//        @Override
+//        protected String[] doInBackground(String... params) {
+//
+//            String location = params[0];
+//            URL weatherRequestUrl = ConnectUtils.buildUrl(location);
+//
+//
+//            try{
+//                String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
+//
+//                simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+//
+//                return simpleJsonWeatherData;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String[] strings) {
+//            //super.onPostExecute(strings);
+//            mRecyclerView.setVisibility(View.VISIBLE);
+//
+//            if (strings != null) {
+//
+//                mAdapter.setWeatherData(strings);
+//            }
+//            }
+//
+//
+//        }
     }
 
 

@@ -17,6 +17,10 @@ public final class ConnectUtils {
 
     private static final String WEATHER_URL_ = "http://api.openweathermap.org/data/2.5/forecast?q=London,uk&APPID=c29467bfa16601d499d65f8fea90da2e";
 
+    private static final String WEATHER_ICON_URL_ = "http://openweathermap.org/img/wn/";
+
+
+
     //private static String apiKey = "c29467bfa16601d499d65f8fea90da2e";
 
     //final static String QUERY_PARAM = "q";
@@ -37,6 +41,22 @@ public final class ConnectUtils {
         }
 
         Log.v(TAG, "Built URI" + url);
+
+        return url;
+    }
+
+    public static URL buildUrlImage(String iconId) {
+        Uri builtUri = Uri.parse(WEATHER_ICON_URL_).buildUpon()
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built Icon URI" + url + iconId + "@2x.png");
 
         return url;
     }

@@ -54,6 +54,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         myViewHolder.mTextView.setText(mWeatherData[i]);
+
     }
 
     @Override
