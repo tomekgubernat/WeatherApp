@@ -1,13 +1,11 @@
 package com.codecool.weatherapp;
 
-import android.os.AsyncTask;
-import android.os.Handler;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,203 +14,125 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codecool.weatherapp.utilities.ConnectUtils;
+import com.codecool.weatherapp.data.Contract;
 
-import java.net.URL;
-
-public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener, LoaderManager.LoaderCallbacks<String[]> {
+public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private RecyclerView mRecyclerView;
     private WeatherAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    String[] simpleJsonWeatherData;
+    public FragmentManager mFragmentManager;
 
-    public FragmentManager fm;
-    public Fragment fragment;
 
     public static final int LOADER_ID = 10;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
-
     ProgressBar mProgressIndicator;
+
+    //Array contains name of column from ContentProvider.
+    // A "projection" defines the columns that will be returned for each row
+
+    public static final String[] mProjection = {
+            Contract.Entry.COLUMN_DATE,
+            Contract.Entry.COLUMN_MIN,
+            Contract.Entry.COLUMN_MAX,
+            Contract.Entry.COLUMN_ICON_ID,
+    };
+
+    public static final int INDEX_WEATHER_DATE = 1;
+    public static final int INDEX_WEATHER_MAX_TEMP = 3;
+    public static final int INDEX_WEATHER_MIN_TEMP = 2;
+    public static final int INDEX_WEATHER_ICON_ID = 4;
+
+
+    private int mPosition = RecyclerView.NO_POSITION;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        fm = getSupportFragmentManager();
-        fragment = fm.findFragmentById(R.id.fragment_container);
 
-
+        mFragmentManager = getSupportFragmentManager();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycleview_weather);
-
         mRecyclerView.setHasFixedSize(true);
-
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-
-        mAdapter = new WeatherAdapter(this);
+        mAdapter = new WeatherAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        LoaderManager.LoaderCallbacks<String[]> callback = MainActivity.this;
-
-        Bundle bundleForLoader = null;
-
-        getSupportLoaderManager().initLoader(LOADER_ID, bundleForLoader, callback);
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-
         mProgressIndicator = (ProgressBar) findViewById(R.id.progressindicator);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                invalidData();
-                getSupportLoaderManager().restartLoader(LOADER_ID, null, MainActivity.this);
+                getSupportLoaderManager().initLoader(LOADER_ID, null, MainActivity.this);
                 mProgressIndicator.setVisibility(View.INVISIBLE);
-
-
             }
         });
 
+        mProgressIndicator.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
 
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
-
-        //loadAllWeatherData();
-
-
-
+        SyncUtils.initialize(this);
     }
 
 
-    @Override
-    public void onWeatherClick(int position) {
-        String test = simpleJsonWeatherData[position];
-        Toast.makeText(this, test + position, Toast.LENGTH_SHORT).show();
-
-        if(fragment == null) {
-            fragment = new DetailsWeatherFragment();
-            fm.beginTransaction().add(R.id.fragment_container, fragment).commit();
-        }
-
-    }
-
-//    private void loadAllWeatherData(){
-//        mRecyclerView.setVisibility(View.VISIBLE);
-//
-//        String location = Preferences.getPreferredWeatherLocation(this);
-//        new FetchWeatherTask().execute(location);
-//
-//
-//    }
-
-    private void invalidData(){
-        mAdapter.setWeatherData(null);
-    }
-
-
-    @NonNull
-    @Override
-    public Loader<String[]> onCreateLoader(int i, @Nullable final Bundle bundle) {
-        return new AsyncTaskLoader<String[]>(this) {
-
-            String[] mData;
-
-            @Override
-            protected void onStartLoading() {
-                if (mData != null) {
-                    deliverResult(mData);
-                } else {
-                    mProgressIndicator.setVisibility(View.VISIBLE);
-                    forceLoad();
-                }
-            }
-
-            @Nullable
-            @Override
-            public String[] loadInBackground() {
-
-                String location = Preferences.getPreferredWeatherLocation(MainActivity.this);
-                URL weatherRequestUrl = ConnectUtils.buildUrl(location);
-
-
-                try{
-                    String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
-
-                    simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
-
-                    return simpleJsonWeatherData;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            public void deliverResult (String[] dt){
-                mData = dt;
-                super.deliverResult(dt);
-            }
-        };
+    public void openDialog(String datailData){
+        DetailDialogBox detailDialogBox = DetailDialogBox.newInstance(datailData);
+        detailDialogBox.show(getSupportFragmentManager(), "test");
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<String[]> loader, String[] strings) {
-        mProgressIndicator.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-        mSwipeRefreshLayout.setRefreshing(false);
+    public void onWeatherClick(String weatherForDay) {
+        Toast.makeText(this, weatherForDay, Toast.LENGTH_SHORT).show();
 
-        if (strings != null) {
+        openDialog(weatherForDay);
 
-            mAdapter.setWeatherData(strings);
+
+    }
+
+
+    public Loader<Cursor> onCreateLoader(int loaderid, Bundle bundle) {
+        switch (loaderid) {
+            case LOADER_ID:
+                Uri QueryUri = Contract.Entry.CONTENT_URI;
+                String sortOrder = Contract.Entry.COLUMN_DATE + " ASC";
+                String selection = Contract.Entry.getSqlSelectForTodayOnwards();
+
+                return new CursorLoader(this, QueryUri, mProjection, null, null, null);
+
+            default:
+                    throw new RuntimeException("Loader not implemented " + loaderid);
         }
     }
 
+
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            mAdapter.swapCursor(data);
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            mRecyclerView.smoothScrollToPosition(mPosition);
+
+            if(data.getCount() != 0) {
+                mProgressIndicator.setVisibility(View.INVISIBLE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
     @Override
-    public void onLoaderReset(@NonNull Loader<String[]> loader) {
-
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
-
-//    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-//
-//        @Override
-//        protected String[] doInBackground(String... params) {
-//
-//            String location = params[0];
-//            URL weatherRequestUrl = ConnectUtils.buildUrl(location);
-//
-//
-//            try{
-//                String jsonWeatherResponse = ConnectUtils.getResponseFromHttpUrl(weatherRequestUrl);
-//
-//                simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
-//
-//                return simpleJsonWeatherData;
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String[] strings) {
-//            //super.onPostExecute(strings);
-//            mRecyclerView.setVisibility(View.VISIBLE);
-//
-//            if (strings != null) {
-//
-//                mAdapter.setWeatherData(strings);
-//            }
-//            }
-//
-//
-//        }
-    }
+}
 
 

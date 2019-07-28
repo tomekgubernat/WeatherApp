@@ -89,4 +89,14 @@ public class DataUtils {
 
         }
     }
+
+
+    public static boolean isDateNormalized(long millisSinceEpoch) {
+        boolean isDateNormalized = false;
+        if (millisSinceEpoch % DAY_IN_MILI == 0) {
+            isDateNormalized = true;
+        }
+
+        return isDateNormalized;
+    }
 }

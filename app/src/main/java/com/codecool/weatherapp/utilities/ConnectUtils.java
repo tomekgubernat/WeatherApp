@@ -14,60 +14,58 @@ public final class ConnectUtils {
 
     private static final String TAG = ConnectUtils.class.getSimpleName();
 
+    private static String OPEN_WEATHER_API_KEY = "c29467bfa16601d499d65f8fea90da2e";
 
-    private static final String WEATHER_URL_ = "http://api.openweathermap.org/data/2.5/forecast?q=London,uk&APPID=c29467bfa16601d499d65f8fea90da2e";
-
-    private static final String WEATHER_ICON_URL_ = "http://openweathermap.org/img/wn/";
-
-
-
-    //private static String apiKey = "c29467bfa16601d499d65f8fea90da2e";
-
-    //final static String QUERY_PARAM = "q";
-    //final static String APPID_PARAM = "&appid=";
+    final static String QUERY_PARAM = "q";
+    final static String APPID_PARAM = "appid";
 
 
-    public static URL buildUrl(String locationQuery) {
-        Uri builtUri = Uri.parse(WEATHER_URL_).buildUpon()
-                //.appendQueryParameter(QUERY_PARAM, locationQuery)
-                //.appendQueryParameter(APPID_PARAM, apiKey)
+    public static URL buildWeatherUrl(String location) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http")
+                .authority("www.api.openweathermap.org")
+                .appendPath("data")
+                .appendPath("2.5")
+                .appendPath("forecast?")
+                .appendQueryParameter(QUERY_PARAM, location)
+                .appendQueryParameter(APPID_PARAM, OPEN_WEATHER_API_KEY)
                 .build();
 
         URL url = null;
         try {
-            url = new URL(builtUri.toString());
+            url = new URL(builder.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        Log.v(TAG, "Built URI" + url);
-
+        Log.v(TAG, "FORECAST URL: " + url);
         return url;
     }
 
-    public static URL buildUrlImage(String iconId) {
-        Uri builtUri = Uri.parse(WEATHER_ICON_URL_).buildUpon()
+    public static URL buildImageUrl(String iconId) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http")
+                .authority("www.openweathermap.org")
+                .appendPath("img")
+                .appendPath("wn")
+                .appendPath(iconId + "@2x.png")
                 .build();
 
         URL url = null;
         try {
-            url = new URL(builtUri.toString());
+            url = new URL(builder.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        Log.v(TAG, "Built Icon URI" + url + iconId + "@2x.png");
-
+        Log.v(TAG, "FORECAST ICON URI: " + url);
         return url;
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
-            InputStream in = urlConnection.getInputStream();
+            InputStream inputStream = urlConnection.getInputStream();
 
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A"); //regex \A stands for :start of a string!
 
             boolean hasInput = scanner.hasNext();
             if (hasInput) {
