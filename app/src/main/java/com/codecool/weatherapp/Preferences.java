@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class Preferences {
 
-    private static final String DEFAULT_LOCATION = "Londyn";
+    private static final String DEFAULT_LOCATION = "London";
 
     public static String getPreferredWeatherLocation(Context context) {
         return getDefaultWeatherLocation();

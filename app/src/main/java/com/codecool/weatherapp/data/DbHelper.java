@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHelper extends SQLiteOpenHelper {
 
-    public static final String DB_NAME = "weather2.db";
+    public static final String DB_NAME = "weather3.db";
     public static final int DB_VERSION = 1;
 
     public DbHelper(Context context) {
@@ -22,9 +22,14 @@ public class DbHelper extends SQLiteOpenHelper {
                 Contract.Entry.COLUMN_MIN + " REAL NOT NULL, " +
                 Contract.Entry.COLUMN_MAX + " REAL NOT NULL, " +
                 Contract.Entry.COLUMN_ICON_ID + " REAL NOT NULL, " +
-        ");";
+                Contract.Entry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
+                Contract.Entry.COLUMN_PRESSURE + " REAL NOT NULL, " +
+                Contract.Entry.COLUMN_DESCRIPTION + " REAL NOT NULL, " +
+        //");";
+                " UNIQUE (" + Contract.Entry.COLUMN_DATE + ") ON CONFLICT REPLACE);";
 
-                db.execSQL(SQL_CREATE_WEATHER_TABLE);
+
+        db.execSQL(SQL_CREATE_WEATHER_TABLE);
     }
 
     @Override

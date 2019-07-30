@@ -22,6 +22,12 @@ public class Contract {
         public static final String COLUMN_MIN = "min";
         public static final String COLUMN_MAX = "max";
         public static final String COLUMN_ICON_ID = "icon";
+        public static final String COLUMN_HUMIDITY = "humidity";
+        public static final String COLUMN_PRESSURE = "pressure";
+        public static final String COLUMN_DESCRIPTION = "description";
+
+
+
 
 
         public static Uri buildWeatherUriWithDate(long date) {

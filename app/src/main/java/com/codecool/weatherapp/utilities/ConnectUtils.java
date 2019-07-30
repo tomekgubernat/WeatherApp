@@ -17,16 +17,16 @@ public final class ConnectUtils {
     private static String OPEN_WEATHER_API_KEY = "c29467bfa16601d499d65f8fea90da2e";
 
     final static String QUERY_PARAM = "q";
-    final static String APPID_PARAM = "appid";
+    final static String APPID_PARAM = "APPID";
 
 
     public static URL buildWeatherUrl(String location) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http")
-                .authority("www.api.openweathermap.org")
+                .authority("api.openweathermap.org")
                 .appendPath("data")
                 .appendPath("2.5")
-                .appendPath("forecast?")
+                .appendPath("forecast")
                 .appendQueryParameter(QUERY_PARAM, location)
                 .appendQueryParameter(APPID_PARAM, OPEN_WEATHER_API_KEY)
                 .build();

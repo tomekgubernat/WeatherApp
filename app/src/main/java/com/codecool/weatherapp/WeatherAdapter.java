@@ -24,11 +24,18 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
     private final Context mContext;
     // Create cursor.
     // Cursor is the Interface which represents a 2 dimensional table of any database. We don't need load all data into memor.
-    private Cursor mCursor;
+    private static Cursor mCursor;
+
+    private static final int VIEW_TYPE_TODAY = 0;
+    private static final int VIEW_TYPE_FUTURE_DAY = 1;
+
+    private boolean mUseTodayLayout;
 
     public WeatherAdapter(Context context, OnClickListener onClickListener){
         mOnClickListener = onClickListener;
         mContext = context;
+        mUseTodayLayout = true;
+
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -37,6 +44,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
         public final ImageView mWeatherIcon;
         public final TextView mWeatherTempHigh;
         public final TextView mWeatherTempLow;
+        public final TextView mWeatherTemp;
+
 
         OnClickListener mOnClickListener;
 
@@ -46,6 +55,8 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
             mWeatherIcon = (ImageView) itemView.findViewById(R.id.weatherIcon);
             mWeatherTempHigh = (TextView) itemView.findViewById(R.id.weatherTempHigh);
             mWeatherTempLow = (TextView) itemView.findViewById(R.id.weatherTempLow);
+            mWeatherTemp = (TextView) itemView.findViewById(R.id.weatherTemp);
+
 
             this.mOnClickListener = onClickListener;
 
@@ -54,21 +65,46 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
 
         @Override
         public void onClick(View v) {
-            String weatherForDay = mWeatherTempLow.getText().toString();
-            mOnClickListener.onWeatherClick(weatherForDay);
+//            String weatherForDay = mWeatherTempLow.getText().toString();
+//            mOnClickListener.onWeatherClick(weatherForDay);
+
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+
+            //long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+            mOnClickListener.onWeatherClick(mCursor);
+
         }
     }
 
     public interface OnClickListener {
-        void onWeatherClick(String weatherForDay);
+        void onWeatherClick(Cursor weatherForDay);
     }
 
 
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
+        int layoutId;
+
+        switch (i) {
+
+            case VIEW_TYPE_TODAY: {
+                layoutId = R.layout.weather_list_first;
+                break;
+            }
+
+            case VIEW_TYPE_FUTURE_DAY: {
+                layoutId = R.layout.weather_list_item;
+                break;
+            }
+
+            default:
+                throw new IllegalArgumentException("Invalid view type, value of " + i);
+        }
+
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.weather_list_item, viewGroup, false);
+        View view = inflater.inflate(layoutId, viewGroup, false);
         view.setFocusable(true);
 
         return new MyViewHolder(view, mOnClickListener);
@@ -101,6 +137,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
 
         myViewHolder.mWeatherTempHigh.setText(tempHigh);
 
+        myViewHolder.mWeatherTemp.setText(tempHigh);
+
+
         //low
         double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
 
@@ -113,6 +152,15 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
     public int getItemCount() {
         if (null == mCursor) return 0;
         return mCursor.getCount();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mUseTodayLayout && position == 0) {
+            return VIEW_TYPE_TODAY;
+        } else {
+            return VIEW_TYPE_FUTURE_DAY;
+        }
     }
 
 

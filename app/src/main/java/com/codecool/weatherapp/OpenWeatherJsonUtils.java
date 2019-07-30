@@ -21,6 +21,9 @@ public final class OpenWeatherJsonUtils {
         final String MAX = "temp_max";
         final String MIN = "temp_min";
         final String ICON = "icon";
+        final String HUM = "humidity";
+        final String PRESS = "pressure";
+        final String DESCRIPT = "description";
 
         long localSystemDate = System.currentTimeMillis();
 
@@ -37,6 +40,9 @@ public final class OpenWeatherJsonUtils {
             double temp_max;
             double temp_min;
             String icon;
+            String hum;
+            double press;
+            String description;
 
             long dateWithTimeZone = DataUtils.getUTCDateWithTimeZone(localSystemDate);
             long startDay = dateWithTimeZone/ DataUtils.DAY_IN_MILI * DataUtils.DAY_IN_MILI;
@@ -58,11 +64,23 @@ public final class OpenWeatherJsonUtils {
             temp_max = mainData.getDouble(MAX);
             temp_min = mainData.getDouble(MIN);
 
+            description = weatherObject.getString(DESCRIPT);
+            hum = mainData.getString(HUM);
+            press = mainData.getDouble(PRESS);
+
+
             ContentValues weatherValuers = new ContentValues();
             weatherValuers.put(Contract.Entry.COLUMN_DATE, DateFinal);
             weatherValuers.put(Contract.Entry.COLUMN_MAX, temp_max);
             weatherValuers.put(Contract.Entry.COLUMN_MIN, temp_min);
             weatherValuers.put(Contract.Entry.COLUMN_ICON_ID, icon);
+            weatherValuers.put(Contract.Entry.COLUMN_HUMIDITY, hum);
+            weatherValuers.put(Contract.Entry.COLUMN_PRESSURE, press);
+            weatherValuers.put(Contract.Entry.COLUMN_DESCRIPTION, description);
+
+
+
+
 
             weatherCOntentValue[i] = weatherValuers;
         }

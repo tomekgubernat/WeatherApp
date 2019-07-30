@@ -12,11 +12,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codecool.weatherapp.data.Contract;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements WeatherAdapter.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -40,12 +45,23 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
             Contract.Entry.COLUMN_MIN,
             Contract.Entry.COLUMN_MAX,
             Contract.Entry.COLUMN_ICON_ID,
+            Contract.Entry.COLUMN_HUMIDITY,
+            Contract.Entry.COLUMN_PRESSURE,
+            Contract.Entry.COLUMN_DESCRIPTION,
+
+
+
     };
 
     public static final int INDEX_WEATHER_DATE = 1;
     public static final int INDEX_WEATHER_MAX_TEMP = 3;
     public static final int INDEX_WEATHER_MIN_TEMP = 2;
     public static final int INDEX_WEATHER_ICON_ID = 4;
+    public static final int INDEX_WEATHER_HUMIDITY = 5;
+    public static final int INDEX_WEATHER_PREASSURE = 6;
+    public static final int INDEX_WEATHER_DESCRIPTION = 7;
+
+
 
 
     private int mPosition = RecyclerView.NO_POSITION;
@@ -55,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        getSupportActionBar().setElevation(0); //remove shadow and line below actionbar
+
 
         mFragmentManager = getSupportFragmentManager();
 
@@ -66,16 +84,16 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         mAdapter = new WeatherAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        //mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mProgressIndicator = (ProgressBar) findViewById(R.id.progressindicator);
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getSupportLoaderManager().initLoader(LOADER_ID, null, MainActivity.this);
-                mProgressIndicator.setVisibility(View.INVISIBLE);
-            }
-        });
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                getSupportLoaderManager().initLoader(LOADER_ID, null, MainActivity.this);
+//                mProgressIndicator.setVisibility(View.INVISIBLE);
+//            }
+//        });
 
         mProgressIndicator.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
@@ -86,19 +104,44 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
     }
 
 
-    public void openDialog(String datailData){
+    public void openDialog(ArrayList datailData){
         DetailDialogBox detailDialogBox = DetailDialogBox.newInstance(datailData);
         detailDialogBox.show(getSupportFragmentManager(), "test");
     }
 
     @Override
-    public void onWeatherClick(String weatherForDay) {
-        Toast.makeText(this, weatherForDay, Toast.LENGTH_SHORT).show();
+    public void onWeatherClick(Cursor weatherForDay) {
+        //Toast.makeText(this, weatherForDay, Toast.LENGTH_SHORT).show();
 
-        openDialog(weatherForDay);
+        //Uri uriForDateClicked = Contract.Entry.buildWeatherUriWithDate(weatherForDay);
+
+        //Cursor cursor = weatherForDay;
+
+        String date = weatherForDay.getString(MainActivity.INDEX_WEATHER_DATE);
+        String min = weatherForDay.getString(MainActivity.INDEX_WEATHER_MIN_TEMP);
+        String max = weatherForDay.getString(MainActivity.INDEX_WEATHER_MAX_TEMP);
+        String icon = weatherForDay.getString(MainActivity.INDEX_WEATHER_ICON_ID);
+        String press = weatherForDay.getString(MainActivity.INDEX_WEATHER_PREASSURE);
+        String hum = weatherForDay.getString(MainActivity.INDEX_WEATHER_HUMIDITY);
+        String des = weatherForDay.getString(MainActivity.INDEX_WEATHER_DESCRIPTION);
+
+        ArrayList<String> test = new ArrayList<>();
+
+        test.add(date);
+        test.add(min);
+        test.add(max);
+        test.add(icon);
+        test.add(press);
+        test.add(hum);
+        test.add(des);
+
+
+        openDialog(test);
 
 
     }
+
+
 
 
     public Loader<Cursor> onCreateLoader(int loaderid, Bundle bundle) {
@@ -132,6 +175,29 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.weather_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.settings:
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.localization:
+                Toast.makeText(this, "Localization", Toast.LENGTH_SHORT).show();
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
+
 
 }
 
