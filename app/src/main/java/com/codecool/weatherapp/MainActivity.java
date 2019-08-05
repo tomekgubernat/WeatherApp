@@ -1,7 +1,10 @@
 package com.codecool.weatherapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -220,6 +223,15 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         switch (item.getItemId()){
             case R.id.settings:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+
+                Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+                startActivity(startSettingsActivity);
+
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                Log.v("SH", sharedPreferences.getString("key_temp_units", ""));
+
+
                 return true;
             case R.id.localization:
                 Toast.makeText(this, "Localization", Toast.LENGTH_SHORT).show();

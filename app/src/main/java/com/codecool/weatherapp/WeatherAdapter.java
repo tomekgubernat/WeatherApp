@@ -74,7 +74,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
             itemView.setOnClickListener(this);
 
         }
-            public void bindViewSecondList(int pos) {
+            public void bindViewSecondList(int pos, Context context) {
 
                 pos = pos - 1;
 
@@ -99,7 +99,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
                 //high
                 double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
 
-                String tempHigh = WeatherUtils.formatTemperature(highInCelsius);
+                String tempHigh = WeatherUtils.formatTemperature(context, highInCelsius);
 
                 mWeatherTempHigh.setText(tempHigh);
 
@@ -109,13 +109,13 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
                 //low
                 double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
 
-                String tempLow = WeatherUtils.formatTemperature(lowInCelsius);
+                String tempLow = WeatherUtils.formatTemperature(context, lowInCelsius);
 
                 mWeatherTempLow.setText(tempLow);
 
             }
 
-            public void bindViewFirstList(int pos) {
+            public void bindViewFirstList(int pos, Context context) {
 
 
                 mCursor.moveToPosition(pos);
@@ -138,7 +138,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
                 //high
                 double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
 
-                String tempHigh = WeatherUtils.formatTemperature(highInCelsius);
+                String tempHigh = WeatherUtils.formatTemperature(context, highInCelsius);
 
                 mWeatherTempHigh.setText(tempHigh);
 
@@ -148,7 +148,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
                 //low
                 double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
 
-                String tempLow = WeatherUtils.formatTemperature(lowInCelsius);
+                String tempLow = WeatherUtils.formatTemperature(context, lowInCelsius);
 
                 mWeatherTempLow.setText(tempLow);
             }
@@ -167,9 +167,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
             //high
             double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
 
-            String tempHigh = WeatherUtils.formatTemperature(highInCelsius);
+            //String tempHigh = WeatherUtils.formatTemperature(contex,highInCelsius);
 
-            mDegree.add(tempHigh);
+            mDegree.add("12");
 
             return mDegree;
         }
@@ -345,11 +345,11 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.MyViewHo
         try {
             if (myViewHolder instanceof FirstViewHolder) {
                 FirstViewHolder vh = (FirstViewHolder) myViewHolder;
-                vh.bindViewFirstList(i);
+                vh.bindViewFirstList(i, mContext);
 
             } else if (myViewHolder instanceof SeconfdViewHolder) {
                 SeconfdViewHolder vh = (SeconfdViewHolder) myViewHolder;
-                vh.bindViewSecondList(i);
+                vh.bindViewSecondList(i, mContext);
 
             } else if (myViewHolder instanceof HourlyViewHolder) {
                 HourlyViewHolder vh = (HourlyViewHolder) myViewHolder;
