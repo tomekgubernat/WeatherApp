@@ -69,6 +69,15 @@ public class DataUtils {
     }
 
 
+    public static String getStringHours() {
+
+        long localSystemDate = System.currentTimeMillis();
+
+        String localizedDayName = new SimpleDateFormat("HH:mm").format(localSystemDate);
+
+        return localizedDayName;
+    }
+
 
     private static String getName(long dateInMiliSec) {
 

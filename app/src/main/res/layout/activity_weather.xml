@@ -25,9 +25,6 @@
     <!--</LinearLayout>-->
 
 
-
-
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
@@ -42,11 +39,17 @@
         </android.support.v7.widget.RecyclerView>
 
 
-
-
-
-
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recycleview_hourly_weather"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:orientation="horizontal">-->
+
+    <!--</android.support.v7.widget.RecyclerView>-->
+
 
     <ProgressBar
         android:id="@+id/progressindicator"

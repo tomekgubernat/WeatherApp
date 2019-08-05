@@ -10,16 +10,23 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codecool.weatherapp.data.Contract;
+import com.codecool.weatherapp.utilities.DataUtils;
 
 import java.util.ArrayList;
 
@@ -29,7 +36,10 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
     private WeatherAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+
+
     public FragmentManager mFragmentManager;
+
 
 
     public static final int LOADER_ID = 10;
@@ -84,16 +94,17 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         mAdapter = new WeatherAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
 
-        //mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mProgressIndicator = (ProgressBar) findViewById(R.id.progressindicator);
 
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                getSupportLoaderManager().initLoader(LOADER_ID, null, MainActivity.this);
-//                mProgressIndicator.setVisibility(View.INVISIBLE);
-//            }
-//        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                SyncUtils.StarSync(MainActivity.this);
+                updateRefreshDate();
+                mProgressIndicator.setVisibility(View.INVISIBLE);
+            }
+        });
 
         mProgressIndicator.setVisibility(View.VISIBLE);
         mRecyclerView.setVisibility(View.INVISIBLE);
@@ -101,6 +112,11 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
         SyncUtils.initialize(this);
+
+
+        //geDate();
+
+
     }
 
 
@@ -161,13 +177,28 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             mAdapter.swapCursor(data);
-            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             mRecyclerView.smoothScrollToPosition(mPosition);
+            mSwipeRefreshLayout.setRefreshing(false);
 
-            if(data.getCount() != 0) {
+
+
+        if(data.getCount() != 0) {
                 mProgressIndicator.setVisibility(View.INVISIBLE);
                 mRecyclerView.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(false);
+
+
+
         }
+    }
+
+
+    public void updateRefreshDate (){
+
+        String summary = "Update: " + DataUtils.getStringHours();
+        TextView mUpdate = (TextView) findViewById(R.id.weather_update);
+        mUpdate.setText(summary);
     }
 
 
@@ -198,6 +229,39 @@ public class MainActivity extends AppCompatActivity implements WeatherAdapter.On
         }
     }
 
+
+//    private ArrayList<String> mDegree = new ArrayList<>();
+//    private ArrayList<String> mHour =  new ArrayList<>();
+//
+//    private void geDate(){
+//        mDegree.add("31");
+//        mDegree.add("27");
+//        mDegree.add("22");
+//        mDegree.add("18");
+//        mDegree.add("15");
+//        mDegree.add("13");
+//        mDegree.add("12");
+//
+//        mHour.add("06:00");
+//        mHour.add("09:00");
+//        mHour.add("12:00");
+//        mHour.add("15:00");
+//        mHour.add("18:00");
+//        mHour.add("21:00");
+//        mHour.add("24:00");
+//
+//
+//        initRecyclerView();
+//    }
+//
+//    private void initRecyclerView(){
+//
+//        LinearLayoutManager mLayoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+//        RecyclerView mRecyclerView2 = (RecyclerView) findViewById(R.id.recycleview_hourly_weather);
+//        mRecyclerView2.setLayoutManager(mLayoutManager2);
+//        HourlyWeatherAdapter mAdapter2 = new HourlyWeatherAdapter(mDegree, mHour, this);
+//        mRecyclerView2.setAdapter(mAdapter2);
+//    }
 
 }
 
