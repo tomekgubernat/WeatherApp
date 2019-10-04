@@ -2,19 +2,17 @@ package com.codecool.weatherapp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.database.Cursor;
-import android.net.Uri;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v7.view.menu.MenuView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codecool.weatherapp.utilities.ConnectUtils;
+import com.codecool.weatherapp.utilities.DataUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -22,9 +20,15 @@ import java.util.ArrayList;
 
 public class DetailDialogBox extends DialogFragment {
 
-    private static final String ARG_DATE = "date";
+    public static final int INDEX_WEATHER_DATE = 0;
+    public static final int INDEX_WEATHER_ICON_ID = 3;
+    public static final int INDEX_WEATHER_PREASSURE = 4;
+    public static final int INDEX_WEATHER_HUMIDITY = 5;
+    public static final int INDEX_WEATHER_DESCRIPTION = 6;
+    public static final int INDEX_WEATHER_CLOUDS = 7;
 
-    private Uri mUri;
+    private static final String ARG_DATE = "date";
+    //private Uri mUri;
 
     public static DetailDialogBox newInstance(ArrayList data) {
         Bundle args = new Bundle();
@@ -38,40 +42,41 @@ public class DetailDialogBox extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View v = LayoutInflater.from(getActivity()).inflate(R.layout.daily_details_fragment,null);
 
-//        String detail = (String) getArguments().getString(ARG_DATE);
-//        TextView mTextView = (TextView) v.findViewById(R.id.details_data);
-//        mTextView.setText(detail);
-//
-//        mUri = (Uri) getArguments().get(ARG_DATE);
+        final AlertDialog.Builder mDialog = new AlertDialog.Builder(getActivity());
+        View v = LayoutInflater.from(getActivity()).inflate(R.layout.daily_details_dialogbox,null);
 
+        mDialog.setView(v);
+        final AlertDialog detailsDialog = mDialog.create();
+        detailsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        ArrayList<String> test = getArguments().getStringArrayList(ARG_DATE);
+        ArrayList<String> WeatherDataArray = getArguments().getStringArrayList(ARG_DATE);
 
-        TextView mTextView1 = (TextView) v.findViewById(R.id.details_data);
-        mTextView1.setText(test.get(0));
+        TextView detailsDate = (TextView) v.findViewById(R.id.details_date);
+        long dateInMillis = Long.parseLong(WeatherDataArray.get(INDEX_WEATHER_DATE));
+        String readableDate = DataUtils.getReadablyStringDates(dateInMillis);
+        detailsDate.setText(readableDate);
 
-        TextView mTextView2 = (TextView) v.findViewById(R.id.details_description);
-        mTextView2.setText(test.get(6));
-
-        TextView mTextView3 = (TextView) v.findViewById(R.id.details_humidity);
-        mTextView3.setText(test.get(4));
-
-        TextView mTextView4 = (TextView) v.findViewById(R.id.details_pressure);
-        mTextView4.setText(test.get(5));
-
-        ImageView imageView = (ImageView) v.findViewById(R.id.details_icon);
-        String icon = test.get(3);
-
+        ImageView detailsIcon = (ImageView) v.findViewById(R.id.details_icon);
+        String icon = WeatherDataArray.get(INDEX_WEATHER_ICON_ID);
         URL weatherIcon = ConnectUtils.buildImageUrl(icon);
+        Picasso.get().load(weatherIcon.toString()).into(detailsIcon);
 
-        Picasso.get().load(weatherIcon.toString()).into(imageView);
+        TextView detailsPressure = (TextView) v.findViewById(R.id.details_pressure);
+        String formatPressure = WeatherDataArray.get(INDEX_WEATHER_PREASSURE) + " hPa";
+        detailsPressure.setText(formatPressure);
 
-        return new AlertDialog.Builder(getActivity()).setView(v).create();
+        TextView detailsHumidity = (TextView) v.findViewById(R.id.details_humidity);
+        String formatHumidity = WeatherDataArray.get(INDEX_WEATHER_HUMIDITY) + " %";
+        detailsHumidity.setText(formatHumidity);
+
+        TextView detailsDescription = (TextView) v.findViewById(R.id.details_description);
+        detailsDescription.setText(WeatherDataArray.get(INDEX_WEATHER_DESCRIPTION));
+
+        TextView detailsCloudy = (TextView) v.findViewById(R.id.details_cloudy);
+        String formatCloudy = WeatherDataArray.get(INDEX_WEATHER_CLOUDS) + " %";
+        detailsCloudy.setText(formatCloudy);
+
+        return detailsDialog;
     }
-
-
-
-
 }

@@ -1,9 +1,12 @@
 package com.codecool.weatherapp.utilities;
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class DataUtils {
 
@@ -13,25 +16,25 @@ public class DataUtils {
     public static final long DAY_IN_MILI = HOUR_IN_MILI * 24;
 
     public static String getDate(long miliSec) {
-
-        DateFormat simple = new SimpleDateFormat("EEE");
-
+        DateFormat simple = new SimpleDateFormat("HH:mm");
         Date result = new Date(miliSec);
-
         return simple.format(result);
     }
 
 
-    public static long getUTCDateWithTimeZone(long localDate) {
+    public static long getOffsetTimeZone(long localDate) {
         TimeZone timeZone = TimeZone.getDefault();
         long offSet = timeZone.getOffset(localDate);
-        return localDate + offSet;
+        return offSet;
     }
+
+
     public static long getUTCDateWithoutTimeZone(long localDate) {
         TimeZone timeZone = TimeZone.getDefault();
         long offSet = timeZone.getOffset(localDate);
         return localDate - offSet;
     }
+
 
     public static long getDayNumber(long date) {
         TimeZone tz = TimeZone.getDefault();
@@ -40,51 +43,38 @@ public class DataUtils {
     }
 
 
-    public static String getStringDates(long miliSec) {
+    public static String getReadablyStringDates(long miliSec) {
 
-
-
-        long dateFromAPI = getUTCDateWithoutTimeZone(miliSec);
-//        long dayNumberFromData = dateFromAPI / DAY_IN_MILLIS;
-//        long currentDayNumber = System.currentTimeMillis() / DAY_IN_MILLIS;
-
-        long dayNumberFromData = getDayNumber(dateFromAPI);
+        long dateFromDatabase = miliSec - 720000;
+        long dayNumberFromData = dateFromDatabase/DAY_IN_MILI;
         long currentDayNumber = getDayNumber(System.currentTimeMillis());
 
-        String localizedDayName = new SimpleDateFormat(" | dd MMM").format(dateFromAPI);
+        String localizedDayName = new SimpleDateFormat(" | dd MMM").format(dateFromDatabase);
 
-        String dayName = getName(dateFromAPI);
+        String dayName = getName(dateFromDatabase);
 
         if (dayNumberFromData == currentDayNumber) {
-
 
             if (dayNumberFromData - currentDayNumber < 2) {
                 return dayName + localizedDayName;
             } else {
                 return localizedDayName;
             }
-
         }
         return dayName + localizedDayName;
     }
 
 
     public static String getStringHours() {
-
         long localSystemDate = System.currentTimeMillis();
-
         String localizedDayName = new SimpleDateFormat("HH:mm").format(localSystemDate);
-
         return localizedDayName;
     }
 
 
     private static String getName(long dateInMiliSec) {
 
-//        long dayNumberFromData = dateInMiliSec/DAY_IN_MILLIS;
-//        long currentDayNumber = System.currentTimeMillis()/DAY_IN_MILLIS;
-
-        long dayNumberFromData = getDayNumber(dateInMiliSec);
+        long dayNumberFromData = dateInMiliSec/DAY_IN_MILI;
         long currentDayNumber = getDayNumber(System.currentTimeMillis());
 
         if(dayNumberFromData == currentDayNumber) {
@@ -95,7 +85,6 @@ public class DataUtils {
             DateFormat simple = new SimpleDateFormat("EEEE");
             Date result = new Date(dateInMiliSec);
             return simple.format(result);
-
         }
     }
 
@@ -105,7 +94,6 @@ public class DataUtils {
         if (millisSinceEpoch % DAY_IN_MILI == 0) {
             isDateNormalized = true;
         }
-
         return isDateNormalized;
     }
 }

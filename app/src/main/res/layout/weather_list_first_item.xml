@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
+    android:layout_height="260dp"
     android:layout_gravity="center_horizontal"
-    android:background="@drawable/gradient_background"
+    android:background="@drawable/gradient_background_blue"
     android:orientation="vertical">
 
     <TextView
@@ -14,7 +14,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="London"
         android:textColor="@android:color/white"
         android:textSize="36sp"
         android:textStyle="bold"
@@ -36,7 +35,7 @@
         app:layout_constraintBottom_toTopOf="@id/weather_location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/weatherTemp"
+        app:layout_constraintTop_toBottomOf="@id/weather_temp"
         tools:text="Upload: 12:42" />
 
     <TextView
@@ -46,9 +45,9 @@
         android:layout_marginBottom="8dp"
         android:text="Showers"
         android:textAllCaps="false"
-        android:textColor="#42a5f5"
+        android:textColor="#276393"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@id/weatherTemp"
+        app:layout_constraintBottom_toBottomOf="@id/weather_temp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
@@ -56,7 +55,7 @@
 
 
     <TextView
-        android:id="@+id/weatherDate"
+        android:id="@+id/weather_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -68,7 +67,7 @@
         tools:text="Today | 29 Jul" />
 
     <ImageView
-        android:id="@+id/weatherIcon"
+        android:id="@+id/weather_icon"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_marginStart="8dp"
@@ -81,10 +80,10 @@
 
 
     <TextView
-        android:id="@+id/weatherTemp"
+        android:id="@+id/weather_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +91,7 @@
         tools:text="25°C" />
 
     <TextView
-        android:id="@+id/weatherTempHigh"
+        android:id="@+id/weather_temp_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -106,7 +105,7 @@
         tools:text="21" />
 
     <TextView
-        android:id="@+id/weatherTempLow"
+        android:id="@+id/weather_temp_low"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -126,6 +125,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="2dp"
         android:text="max"
+        android:textColor="#276393"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintStart_toEndOf="@id/guideline3" />
@@ -137,6 +137,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:text="min"
+        android:textColor="#276393"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@id/guideline3"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
@@ -416,6 +417,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="262dp" />
+
+
 
 
 </android.support.constraint.ConstraintLayout>

@@ -6,23 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#d9edfd">
 
     <TextView
-        android:id="@+id/weatherDate"
+        android:id="@+id/weather_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/weatherIcon"
+        app:layout_constraintEnd_toStartOf="@+id/weather_icon"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Today | 29 Jul" />
 
     <TextView
-        android:id="@+id/weatherTemp"
+        android:id="@+id/weather_temp"
         android:layout_width="1dp"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
@@ -35,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/weatherIcon"
+        android:id="@+id/weather_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
@@ -47,18 +48,19 @@
 
 
     <TextView
-        android:id="@+id/weatherTempHigh"
+        android:id="@+id/weather_temp_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
+        app:layout_constraintStart_toEndOf="@+id/weather_icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="25°C" />
 
     <TextView
-        android:id="@+id/weatherTempLow"
+        android:id="@+id/weather_temp_low"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -66,7 +68,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toEndOf="@id/weatherTempHigh"
+        app:layout_constraintStart_toEndOf="@id/weather_temp_high"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="18°C" />
 

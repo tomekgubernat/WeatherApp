@@ -14,23 +14,16 @@ public class Provider extends ContentProvider {
     public static final int CODE_WEATHER = 100;
     public static final int CODE_WEATHER_WITH_DATE = 101;
 
-
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private DbHelper mOpenHelper;
 
 
-
     public static UriMatcher buildUriMatcher() {
-
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = Contract.CONTENT_AUTHORITY;
 
-
-
         matcher.addURI(authority, Contract.PATH_WEATHER, CODE_WEATHER);
-
-
         matcher.addURI(authority, Contract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
 
         return matcher;

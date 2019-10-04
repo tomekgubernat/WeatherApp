@@ -24,67 +24,61 @@ public final class OpenWeatherJsonUtils {
         final String HUM = "humidity";
         final String PRESS = "pressure";
         final String DESCRIPT = "description";
+        final String CLOUDS = "clouds";
+        final String ALL = "all";
 
-        long localSystemDate = System.currentTimeMillis();
+        long currentLocalSystemDate = System.currentTimeMillis(); //Coordinated Universal Time (UTC)
 
         JSONObject forecastJson = new JSONObject(forecastJsonStr);
         JSONArray weatherArray = forecastJson.getJSONArray(LIST);
 
-        ContentValues[] weatherCOntentValue = new ContentValues[weatherArray.length()];
+        ContentValues[] weatherContentValue = new ContentValues[weatherArray.length()];
+        
+        for (int i = 0; i < weatherArray.length(); i++) {
 
-        int j = 0;
-
-        for (int i = 0; i < weatherArray.length()/8; i++) {
-
-            String DateFinal;
-            double temp_max;
-            double temp_min;
+            double tempMax;
+            double tempMin;
             String icon;
-            String hum;
+            String humidity;
             double press;
             String description;
-
-            long dateWithTimeZone = DataUtils.getUTCDateWithTimeZone(localSystemDate);
-            long startDay = dateWithTimeZone/ DataUtils.DAY_IN_MILI * DataUtils.DAY_IN_MILI;
-
-            long dateInMiliSec;
-
-            j=i*8;
-
-            JSONObject dayForecast = weatherArray.getJSONObject(j);
+            double clouds;
+            
+            JSONObject dayForecast = weatherArray.getJSONObject(i);
 
             JSONObject weatherObject = dayForecast.getJSONArray(WEATHER).getJSONObject(0);
             icon = weatherObject.getString(ICON);
+            
+            JSONObject mainWeatherData = dayForecast.getJSONObject(MAIN);
+            JSONObject cloudsData = dayForecast.getJSONObject(CLOUDS);
 
-            dateInMiliSec = startDay + DataUtils.DAY_IN_MILI * i;
-            DateFinal = DataUtils.getStringDates(dateInMiliSec);
+            String unixTime = dayForecast.getString("dt");//Epoch & Unix Timestamp
+            String unixTimeInMillis = unixTime + "000";
 
-            JSONObject mainData = dayForecast.getJSONObject(MAIN);
+            long timeZoneInMillis = DataUtils.getOffsetTimeZone(currentLocalSystemDate);
+            long dateWithTimeZone = timeZoneInMillis + Long.parseLong(unixTimeInMillis);
 
-            temp_max = mainData.getDouble(MAX);
-            temp_min = mainData.getDouble(MIN);
+            tempMax = mainWeatherData.getDouble(MAX);
+            tempMin = mainWeatherData.getDouble(MIN);
+            humidity = mainWeatherData.getString(HUM);
+            press = mainWeatherData.getDouble(PRESS);
 
             description = weatherObject.getString(DESCRIPT);
-            hum = mainData.getString(HUM);
-            press = mainData.getDouble(PRESS);
-
+            clouds = cloudsData.getDouble(ALL);
 
             ContentValues weatherValuers = new ContentValues();
-            weatherValuers.put(Contract.Entry.COLUMN_DATE, DateFinal);
-            weatherValuers.put(Contract.Entry.COLUMN_MAX, temp_max);
-            weatherValuers.put(Contract.Entry.COLUMN_MIN, temp_min);
+            weatherValuers.put(Contract.Entry.COLUMN_DATE, dateWithTimeZone);
+            weatherValuers.put(Contract.Entry.COLUMN_MAX, tempMax);
+            weatherValuers.put(Contract.Entry.COLUMN_MIN, tempMin);
             weatherValuers.put(Contract.Entry.COLUMN_ICON_ID, icon);
-            weatherValuers.put(Contract.Entry.COLUMN_HUMIDITY, hum);
+            weatherValuers.put(Contract.Entry.COLUMN_HUMIDITY, humidity);
             weatherValuers.put(Contract.Entry.COLUMN_PRESSURE, press);
             weatherValuers.put(Contract.Entry.COLUMN_DESCRIPTION, description);
+            weatherValuers.put(Contract.Entry.COLUMN_CLOUDS, clouds);
 
-
-
-
-
-            weatherCOntentValue[i] = weatherValuers;
+            weatherContentValue[i] = weatherValuers;
         }
-        return weatherCOntentValue;
+        return weatherContentValue;
     }
 
 }

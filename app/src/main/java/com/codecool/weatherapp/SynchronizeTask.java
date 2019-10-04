@@ -3,6 +3,8 @@ package com.codecool.weatherapp;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.codecool.weatherapp.data.Contract;
 import com.codecool.weatherapp.utilities.ConnectUtils;
@@ -14,8 +16,10 @@ public class SynchronizeTask {
     synchronized public static void syncWeather(Context context) {
 
         try {
+            String location = Preferences.getPreferredWeatherLocation();
 
-            String location = Preferences.getPreferredWeatherLocation(context);
+//            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//            String location2 = sharedPreferences.getString("Name", null);
 
             URL weatherRequestUrl = ConnectUtils.buildWeatherUrl(location);
 
@@ -33,7 +37,6 @@ public class SynchronizeTask {
         } catch (Exception e) {
             e.printStackTrace();
             }
-
         }
 }
 

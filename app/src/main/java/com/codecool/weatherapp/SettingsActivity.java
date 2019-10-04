@@ -15,20 +15,14 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_settings);
-
-
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainSettingsFragment()).commit();
     }
-
-
 
     public static class MainSettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
-
             bindSummaryValue(findPreference("key_temp_units"));
         }
     }
@@ -54,9 +48,7 @@ public class SettingsActivity extends PreferenceActivity {
                 preference.setSummary(stringValue);
             }
 
-
             return true;
         }
     };
-
 }

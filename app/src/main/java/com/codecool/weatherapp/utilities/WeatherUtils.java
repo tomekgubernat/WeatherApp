@@ -29,20 +29,5 @@ public class WeatherUtils {
             String roundedTemp = String.valueOf(Math.round(formattedToCelsius * 100)/100);
             return roundedTemp + "°C";
         }
-
-
-        //if (!Preferences.isMetric(context))
-
-//            double formattedToCelsius = kelvinToCelsius(temp);
-//
-//        String roundedTemp = String.valueOf(Math.round(formattedToCelsius * 100)/100);
-//
-//        String celsiusTemp = roundedTemp + "°C";
-//        return celsiusTemp;
     }
-
-
-
-
-
 }

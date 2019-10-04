@@ -25,16 +25,14 @@ public class Contract {
         public static final String COLUMN_HUMIDITY = "humidity";
         public static final String COLUMN_PRESSURE = "pressure";
         public static final String COLUMN_DESCRIPTION = "description";
+        public static final String COLUMN_CLOUDS = "clouds";
 
 
-
-
-
-        public static Uri buildWeatherUriWithDate(long date) {
-            return CONTENT_URI.buildUpon()
-                    .appendPath(Long.toString(date))
-                    .build();
-        }
+//        public static Uri buildWeatherUriWithDate(long date) {
+//            return CONTENT_URI.buildUpon()
+//                    .appendPath(Long.toString(date))
+//                    .build();
+//        }
 
         public static String getSqlSelectForTodayOnwards() {
             long normalizedUtcNow = System.currentTimeMillis();
